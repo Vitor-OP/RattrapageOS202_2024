@@ -122,7 +122,7 @@ La construction de l'arbre se base sur l'*indice d'impureté de Gini* qui calcul
 
 **Exemple** 
 Soit $y_{i}\in \cal{Y}$ ( $Y$ étant la variable d'intérêt) et $m$ le nombre d'échantillons.
-Alors si $y_{i} = y_{j}$ pour $i,j\in \left\{1,\cdots,m\right\}$ l'indice d'impureté de gini est nul (puisqu'on est sûr de faire la bonne prédiction dans ce cas)
+Alors si $y_{i} = y_{j}$ pour $i,j\in \left{1,\cdots,m\right}$ l'indice d'impureté de gini est nul (puisqu'on est sûr de faire la bonne prédiction dans ce cas)
 
 L'algorithme de construction de l'arbre est donc l'algorithme récursif suivant :
 
