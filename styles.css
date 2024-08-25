@@ -1,0 +1,50 @@
+h1 {
+    color: royalblue;
+    text-align: center;
+}
+
+h2 {
+    color: slateblue
+}
+
+h3 {
+    font-weight: bold;
+}
+
+h4 {
+    font-weight: bold;
+}
+
+p {
+    text-align: justify
+};
+
+a:link {
+    text-align: center;
+}
+
+
+figure {
+    border: solid;
+}
+
+.definition {
+    color: darkorange;
+    font-style: italic;
+}
+
+.exemple {
+    color: blue;
+    font-weight: bold;
+}
+
+.cadre {
+    border:blueviolet;
+    background-color: antiquewhite;
+}
+
+.equation {
+    margin-left:3em;
+    border: blue;
+    background-color: antiquewhite
+}
