@@ -13,7 +13,9 @@ Le sujet tourne autour de quelques algorithmes simples issus de la science des d
 Dans les diverses données traitées, on peut distinguer deux types de variables :
 
 <div class="definition">
-<strong>variable explicative</strong> ( notée pour la i<sup>ème</sup> variable explicative $X_{i}$)
+  
+<strong>variable explicative</strong> ( notée pour la i<sup>ème</sup> variable explicative $X_{i}$ )
+
 </div>
 
 - Variable dont les valeurs serviront de paramètres pour prédire la variable d'intérêt
@@ -42,7 +44,7 @@ Enfin, pour évaluer la performance de notre modèle prédictif, on utilisera un
 <div class="definition"><strong>benchmark</strong></div>
 
 - constitué de deux ensembles de données :
-  - un ensemble de $K_{2}$ échantillons $x^{(k)}_{i} \in \chi_{i}$ pour chaque variable explicative $X_{i}$ qu'on utilisera pour essayer de prédire pour chaque échantillon la valeur $y'^{(k)}\in\cal{Y}$ que devrait prendre la variable $Y$
+  - un ensemble de $K_{2}$ échantillons $x_{i}^{(k)} \in \chi_{i}$ pour chaque variable explicative $X_{i}$ qu'on utilisera pour essayer de prédire pour chaque échantillon la valeur $y'^{(k)}\in\cal{Y}$ que devrait prendre la variable $Y$
   - Un ensemble de $K_{2}$ valeurs $y^{(k)}\in\cal{Y}$ donnant la valeur qu'on aurait dû trouver pour chaque échantillon donné dans l'ensemble précédent.
 
 qui nous permettra de tester notre modèle prédictif en regardant le pourcentage de bonnes prédictions (quand $y'^{(k)} == y^{(k)}$ pour $k\in K_{2}$).
@@ -104,7 +106,7 @@ Le principe du classificateur de bayes est le suivant :
 
 - On choisit $n$ variables explicatives $X_{1}, \cdots, X_{n}$ où $n\in\{1,2, \cdots \}$
 - Pour chaque combinaison de données $x_{i}\in X_{i}$ et $y\in Y$, on calcule la fréquence d'apparition $f_{x_{1},\cdots,x_{n},y}$ où $x_{1},\cdots,x_{n}$ et $y$ apparaissent simultanément (c'est à dire sur la même "ligne" du tableau de donnée). On obtient ainsi une loi jointe.
-- Pour un jeu de donnée $x'_{1},\cdots,x'_{n}$, on cherche à prédire une valeur $y'$ correspondant au mode de production le plus probable. Pour cela on cherche $y'$ tel que $\displaystyle f_{x'_{1},\cdots,x'_{n},y'} \geq \max_{y\in Y} f_{x'_{1},\cdots,x'_{n},y}$
+- Pour un jeu de donnée $x_{1}',\cdots,x_{n}'$, on cherche à prédire une valeur $y'$ correspondant au mode de production le plus probable. Pour cela on cherche $y'$ tel que $\displaystyle f_{x_{1}',\cdots,x_{n}',y'} \geq \max_{y\in Y} f_{x_{1}',\cdots,x_{n}',y}$
 
 ### Question IV.1
 
@@ -113,6 +115,7 @@ Quelle est la complexité algorithmique et de stockage pour calculer une loi joi
 ### IV.2 Classificateur de Bayes naïf
 
 Afin de diminuer drastiquement la complexité algorithmique et de stockage, on fait l'hypothèse approximative que les variables explicatives $X_{i}$ sont indépendantes relativement à la variable d'intérêt $Y$. On a donc :
+
 $$
 f_{x_{1},\cdots,x_{n},y} = \prod_{i=1}^{n} f_{x_{i}y}
 $$ 
