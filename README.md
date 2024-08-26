@@ -58,6 +58,8 @@ Le tout devra être envoyé sur les deux adresses e-mail suivant :
  - `xjuvigny@gmail.com`
  - `juvigny@onera.fr`
 
+**IMPORTANT** : **Ne pas envoyer de fichiers compressés mais directement vos fichiers pythons et votre document (pdf, markdown, texte, ...)**
+
 Vous pourrez quitter la salle dès réception effective de votre mail et après avoir signé la feuille d'émargement.
 
 ## II. Configuration de votre ordinateur
