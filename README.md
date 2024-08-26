@@ -52,7 +52,13 @@ qui nous permettra de tester notre modèle prédictif en regardant le pourcentag
 ## I. Ce qu'il faudra restituer
 
  - Les fichiers pythons où on a paralléliser du code
- - Un fichier texte, markdown ou pdf contenant vos analyses et justification de la paralléisation du code
+ - Un fichier texte, markdown ou pdf contenant vos analyses et justification de la parallélisation du code
+
+Le tout devra être envoyé sur les deux adresses e-mail suivant :
+ - `xjuvigny@gmail.com`
+ - `juvigny@onera.fr`
+
+Vous pourrez quitter la salle dès réception effective de votre mail et après avoir signé la feuille d'émargement.
 
 ## II. Configuration de votre ordinateur
 
