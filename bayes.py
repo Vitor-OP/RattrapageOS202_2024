@@ -2,6 +2,18 @@ import numpy as np
 import numpy.linalg as linalg
 import time
 import labels
+from multiprocessing import Pool, cpu_count, Array
+import ctypes
+
+def parallel_classify(func, train, test, *args):
+    n_processes = 8
+    # n_processes = cpu_count()
+    chunk_size = len(test) // n_processes
+    chunks = [test[i:i + chunk_size] for i in range(0, len(test), chunk_size)]
+    with Pool(n_processes) as pool:
+        results = pool.starmap(func, [(train, chunk, *args) for chunk in chunks])
+    
+    return np.concatenate(results)
 
 def loi_jointe(data, v1, v2, v3=None):
     X1 = data[:,v1] # Echantillons variable v1
@@ -73,36 +85,110 @@ if __name__ == "__main__":
     msk = np.random.rand(data.shape[0]) < 0.75
     train = data[ msk]
     test  = data[~msk]
+    
+    # SEQUENTIAL one variable Bayes
+    print("Bayes one variable jour:")
+    deb_seq = time.time()
+    pred_seq = classif_Bayes(train, test, labels.Jour)
+    fin_seq = time.time()
+    acc_seq = 100 * np.sum(pred_seq == test[:, labels.MixProdElec]) / pred_seq.shape[0]
+    print(f"Sequential Précision de la prédiction jour: {acc_seq}%")
+    print(f"Sequential Temps bayes une variable : {fin_seq-deb_seq} secondes")
+    
+    # PARALLEL one variable Bayes
+    deb_par = time.time()
+    pred_par = parallel_classify(classif_Bayes, train, test, labels.Jour)
+    fin_par = time.time()
+    acc_par = 100 * np.sum(pred_par == test[:, labels.MixProdElec]) / pred_par.shape[0]
+    print(f"Parallel Précision de la prédiction jour: {acc_par}%")
+    print(f"Parallel Temps bayes une variable : {fin_par-deb_par} secondes")
+    
+    speedup_bayes1 = (fin_seq - deb_seq) / (fin_par - deb_par)
+    print(f"Speedup for Bayes one variable: {speedup_bayes1:.2f}\n")
+    print()
+    
+    # SEQUENTIAL one variable Bayes
+    print("Bayes one variable mois:")
+    deb_seq = time.time()
+    pred_seq = classif_Bayes(train, test, labels.Mois)
+    fin_seq = time.time()
+    acc_seq = 100 * np.sum(pred_seq == test[:, labels.MixProdElec]) / pred_seq.shape[0]
+    print(f"Sequential Précision de la prédiction mois: {acc_seq}%")
+    print(f"Sequential Temps bayes une variable : {fin_seq-deb_seq} secondes")
+    
+    # PARALLEL one variable Bayes
+    deb_par = time.time()
+    pred_par = parallel_classify(classif_Bayes, train, test, labels.Mois)
+    fin_par = time.time()
+    acc_par = 100 * np.sum(pred_par == test[:, labels.MixProdElec]) / pred_par.shape[0]
+    print(f"Parallel Précision de la prédiction mois: {acc_par}%")
+    print(f"Parallel Temps bayes une variable : {fin_par-deb_par} secondes")
+    
+    speedup_bayes1 = (fin_seq - deb_seq) / (fin_par - deb_par)
+    print(f"Speedup for Bayes one variable: {speedup_bayes1:.2f}\n")
+    print()
 
-    deb = time.time()
-    pred  = classif_Bayes(train, test, labels.Jour)
-    fin = time.time()
-    # On vérifie la précision des prédictions faites par rapport à ce qu'on aurait dû trouver :
-    print(f"Précision de la prédiction jour: {100*np.sum(pred == test[:,labels.MixProdElec])/pred.shape[0]}%")
-    print(f"Temps bayes une variable : {fin-deb} secondes")
+    # SEQUENTIAL two variables Bayes
+    print("Bayes two variables jour/mois:")
+    deb_seq = time.time()
+    pred_seq = classif_Bayes2(train, test, labels.Jour, labels.Mois)
+    fin_seq = time.time()
+    acc_seq = 100 * np.sum(pred_seq == test[:, labels.MixProdElec]) / pred_seq.shape[0]
+    print(f"Sequential Précision de la prédiction jour/mois: {acc_seq}%")
+    print(f"Sequential Temps bayes deux variables : {fin_seq-deb_seq} secondes")
 
-    deb = time.time()
-    pred = classif_Bayes(train, test, labels.Mois)
-    fin = time.time()
-    print(f"Précision de la prédiction mois: {100*np.sum(pred == test[:,labels.MixProdElec])/pred.shape[0]}%")
-    print(f"Temps bayes une variable : {fin-deb} secondes")
+    # PARALLEL two variables Bayes
+    deb_par = time.time()
+    pred_par = parallel_classify(classif_Bayes2, train, test, labels.Jour, labels.Mois)
+    fin_par = time.time()
+    acc_par = 100 * np.sum(pred_par == test[:, labels.MixProdElec]) / pred_par.shape[0]
+    print(f"Parallel Précision de la prédiction jour/mois: {acc_par}%")
+    print(f"Parallel Temps bayes deux variables : {fin_par-deb_par} secondes")
 
-    deb = time.time()
-    pred = classif_Bayes2(train, test, labels.Jour, labels.Mois)
-    fin = time.time()
-    print(f"Précision de la prédiction jour/mois: {100*np.sum(pred == test[:,labels.MixProdElec])/pred.shape[0]}%")
-    print(f"Temps bayes deux variables : {fin-deb} secondes")
+    speedup_bayes2 = (fin_seq - deb_seq) / (fin_par - deb_par)
+    print(f"Speedup for Bayes two variables: {speedup_bayes2:.2f}\n")
+    print()
+
+    # deb = time.time()
+    # pxy = loi_jointe(train, labels.Jour, labels.Mois)
+    # fin = time.time()
+    # print(f"Calcul loi jointe : {fin-deb} secondes")
+    # if sont_independantes(pxy): # Loi indépendante ?
+    #     print("Jour et Mois sont bien indépendants : on test l'algorithme de Bayes naïf")
+    # else:
+    #     print("Désolé, vos deux variables ne sont pas indépendantes. On fait le bayes naïf, mais risque d'erreur")
+    # deb = time.time()
+    # pred = naif_Bayes2(train, test, labels.Jour, labels.Mois)
+    # fin = time.time()
+    # print(f"Précision de la prédiction jour/mois: {100*np.sum(pred == test[:,labels.MixProdElec])/pred.shape[0]}%")
+    # print(f"Temps bayes naïf deux variables : {fin-deb} secondes")
 
     deb = time.time()
     pxy = loi_jointe(train, labels.Jour, labels.Mois)
     fin = time.time()
     print(f"Calcul loi jointe : {fin-deb} secondes")
-    if sont_independantes(pxy): # Loi indépendante ?
-        print("Jour et Mois sont bien indépendants : on test l'algorithme de Bayes naïf")
+    if sont_independantes(pxy):
+        print("Jour et Mois sont bien indépendants : on teste l'algorithme de Bayes naïf")
     else:
-        print("Désolé, vos deux variables ne sont pas indépendantes. On fait le bayes naïf, mais risque d'erreur")
-    deb = time.time()
-    pred = naif_Bayes2(train, test, labels.Jour, labels.Mois)
-    fin = time.time()
-    print(f"Précision de la prédiction jour/mois: {100*np.sum(pred == test[:,labels.MixProdElec])/pred.shape[0]}%")
-    print(f"Temps bayes naïf deux variables : {fin-deb} secondes")
+        print("Désolé, vos deux variables ne sont pas indépendantes. On fait le Bayes naïf, mais risque d'erreur")
+    print()
+
+    # SEQUENTIAL Naive Bayes Classification
+    deb_seq = time.time()
+    pred_seq = naif_Bayes2(train, test, labels.Jour, labels.Mois)
+    fin_seq = time.time()
+    acc_seq = 100 * np.sum(pred_seq == test[:, labels.MixProdElec]) / pred_seq.shape[0]
+    print(f"Sequential Précision de la prédiction jour/mois (naïf): {acc_seq}%")
+    print(f"Sequential Temps bayes naïf deux variables : {fin_seq - deb_seq} secondes")
+
+    # PARALLEL Naive Bayes Classification
+    deb_par = time.time()
+    pred_par = parallel_classify(naif_Bayes2, train, test, labels.Jour, labels.Mois)
+    fin_par = time.time()
+    acc_par = 100 * np.sum(pred_par == test[:, labels.MixProdElec]) / pred_par.shape[0]
+    print(f"Parallel Précision de la prédiction jour/mois (naïf): {acc_par}%")
+    print(f"Parallel Temps bayes naïf deux variables : {fin_par - deb_par} secondes")
+
+    # Speedup Calculation
+    speedup_joint = (fin_seq - deb_seq) / (fin_par - deb_par)
+    print(f"Speedup for Naive Bayes two variables : {speedup_joint:.2f}\n")
